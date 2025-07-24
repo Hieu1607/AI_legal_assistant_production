@@ -36,15 +36,27 @@ try {
 
 # Check if Docker is running
 Write-Host "Checking if Docker is running..."
+$dockerRunning = $false
 try {
-    docker info | Out-Null
-    Write-Host "Docker daemon: Running"
+    $dockerOutput = docker info 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $dockerRunning = $true
+        Write-Host "Docker daemon: Running"
+    }
 } catch {
+    # Catch block for any exceptions
+}
+
+if (-not $dockerRunning) {
     Write-Host "Error: Docker Desktop is not running. Please start Docker Desktop first."
     Write-Host "To start Docker Desktop:"
     Write-Host "1. Click on Docker Desktop icon in the system tray"
     Write-Host "2. Or run Docker Desktop from Start menu"
     Write-Host "3. Wait for Docker to start completely (whale icon should be stable)"
+    Write-Host ""
+    Write-Host "Common error messages when Docker is not running:"
+    Write-Host "- 'error during connect: This error may indicate that the docker daemon is not running'"
+    Write-Host "- 'Cannot connect to the Docker daemon'"
     exit 1
 }
 
