@@ -12,8 +12,9 @@ try {
     git --version | Out-Null
     Write-Host "Git: OK"
 } catch {
-    Write-Host "Error: Git is not installed. Please install Git first."
-    exit 1
+    Write-Host "❌ Error: Git is not installed. Please install Git first."
+    Read-Host -Prompt "Press Enter to exit..."
+    return
 }
 
 # Check Python
@@ -21,8 +22,9 @@ try {
     python --version | Out-Null
     Write-Host "Python: OK"
 } catch {
-    Write-Host "Error: Python is not installed. Please install Python first."
-    exit 1
+    Write-Host "❌ Error: Python is not installed. Please install Python first."
+    Read-Host -Prompt "Press Enter to exit..."
+    return
 }
 
 # Check Docker
@@ -30,8 +32,9 @@ try {
     docker --version | Out-Null
     Write-Host "Docker: OK"
 } catch {
-    Write-Host "Error: Docker is not installed. Please install Docker Desktop first."
-    exit 1
+    Write-Host "❌ Error: Docker is not installed. Please install Docker Desktop first."
+    Read-Host -Prompt "Press Enter to exit..."
+    return
 }
 
 # Check if Docker is running
@@ -63,12 +66,12 @@ if (-not $dockerRunning) {
     Write-Host ""
     Write-Host "After starting Docker Desktop, please run this script again."
     Write-Host ""
-    Write-Host "Press any key to exit..."
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit 1
+    Read-Host -Prompt "Press Enter to exit..."
+    return
 }
 
-Write-Host "All prerequisites met!"
+Write-Host ""
+Write-Host "✅ All prerequisites met!"
 Write-Host ""
 
 # Install gdown for Google Drive downloads
@@ -77,28 +80,28 @@ try {
     pip install gdown
     Write-Host "gdown installed successfully"
 } catch {
-    Write-Host "Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
+    Write-Host "⚠ Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
 }
 Write-Host ""
-
-# Download and run setup script
-Write-Host "Downloading setup script..."
 
 # Move to parent directory to avoid conflicts with project cloning
 $originalLocation = Get-Location
 
+# Download and run setup script
+Write-Host "Downloading setup script..."
 try {
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.ps1" -OutFile "ai_legal_setup.ps1"
     Write-Host "Running setup..."
     .\ai_legal_setup.ps1
-    Set-Location $originalLocation
     Remove-Item "ai_legal_setup.ps1"
 } catch {
-    Write-Host "Error downloading or running setup script: $_"
-    exit 1
+    Write-Host "❌ Error downloading or running setup script: $_"
+    Set-Location $originalLocation
+    Read-Host -Prompt "Press Enter to exit..."
+    return
 }
 
 # Return to original location
 Set-Location $originalLocation
 
-Read-Host -Prompt "Press Enter to exit"
+Read-Host -Prompt "✅ Press Enter to finish"
