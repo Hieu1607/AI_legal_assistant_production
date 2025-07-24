@@ -37,6 +37,16 @@ try {
 Write-Host "All prerequisites met!"
 Write-Host ""
 
+# Install gdown for Google Drive downloads
+Write-Host "Installing gdown for data download..."
+try {
+    pip install gdown
+    Write-Host "gdown installed successfully"
+} catch {
+    Write-Host "Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
+}
+Write-Host ""
+
 # Download and run setup script
 Write-Host "Downloading setup script..."
 try {

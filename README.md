@@ -27,6 +27,7 @@
 - [Git](https://git-scm.com/)
 - [Python 3.11+](https://python.org/)
 - [Docker Desktop](https://docker.com/products/docker-desktop/)
+- `gdown` (for Google Drive downloads): `pip install gdown`
 
 ### Option 1: One-Click Install (Windows)
 
@@ -129,6 +130,9 @@ venv\Scripts\activate     # Windows
 # Install dependencies
 pip install -r requirements.txt
 
+# Install gdown for Google Drive downloads
+pip install gdown
+
 # Set environment variables
 cp .env_example .env
 # Edit .env with your actual API keys:
@@ -200,7 +204,44 @@ docker-compose up -d
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## � Troubleshooting
+
+### Common Issues
+
+**1. gdown installation fails:**
+```bash
+# Try upgrading pip first
+pip install --upgrade pip
+pip install gdown
+
+# Or install with user flag
+pip install --user gdown
+```
+
+**2. Google Drive download fails:**
+```bash
+# Manual download if automated fails
+# Download from: https://drive.google.com/your-file-id
+# Place in data/ directory
+```
+
+**3. ChromaDB permission issues:**
+```bash
+# Check data directory permissions
+chmod 755 data/
+chmod 755 data/processed/
+```
+
+**4. Docker container fails to start:**
+```bash
+# Check Docker Desktop is running
+docker version
+
+# Check port availability
+netstat -tulpn | grep 8000
+```
+
+## �📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 

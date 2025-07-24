@@ -7,6 +7,10 @@ git clone https://github.com/Hieu1607/AI_legal_assistant_production.git
 # Change to project directory
 cd AI_legal_assistant_production
 
+# Install gdown for data download
+echo "Installing gdown..."
+pip install gdown
+
 # Run download script
 echo "Running download script..."
 python scripts/download_gdown.py
