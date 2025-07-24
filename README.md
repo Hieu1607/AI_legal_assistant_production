@@ -131,7 +131,14 @@ pip install -r requirements.txt
 
 # Set environment variables
 cp .env_example .env
-# Edit .env with your settings
+# Edit .env with your actual API keys:
+# - Replace your_openai_api_key_here with your OpenAI API key
+# - Replace your_gemini_api_key_here with your Gemini API key
+
+# Initialize ChromaDB and load sample data
+cd scripts
+python download_data_and_build_vector_store.py
+cd ..
 
 # Run development server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
