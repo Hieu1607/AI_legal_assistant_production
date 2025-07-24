@@ -100,3 +100,5 @@ try {
 
 # Return to original location
 Set-Location $originalLocation
+
+Read-Host -Prompt "Press Enter to exit"
