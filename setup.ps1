@@ -1,3 +1,13 @@
+# Check if Docker is running
+Write-Host "Checking Docker status..."
+try {
+    docker info | Out-Null
+    Write-Host "Docker is running: OK"
+} catch {
+    Write-Host "Error: Docker is not running. Please start Docker Desktop first."
+    exit 1
+}
+
 # Clone repository
 Write-Host "Cloning repository..."
 git clone https://github.com/Hieu1607/AI_legal_assistant_production.git

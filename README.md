@@ -26,8 +26,10 @@
 Đảm bảo máy của bạn đã cài đặt:
 - [Git](https://git-scm.com/)
 - [Python 3.11+](https://python.org/)
-- [Docker Desktop](https://docker.com/products/docker-desktop/)
+- [Docker Desktop](https://docker.com/products/docker-desktop/) - **Lưu ý: Phải khởi động Docker Desktop trước khi chạy**
 - `gdown` (for Google Drive downloads): `pip install gdown`
+
+**Quan trọng**: Đảm bảo Docker Desktop đang chạy trước khi thực hiện setup!
 
 ### Option 1: One-Click Install (Windows)
 
@@ -234,11 +236,31 @@ chmod 755 data/processed/
 
 **4. Docker container fails to start:**
 ```bash
-# Check Docker Desktop is running
-docker version
+# Check if Docker Desktop is running
+docker info
+
+# If Docker is not running, start Docker Desktop:
+# Windows: Start Docker Desktop from Start menu
+# macOS: Open Docker Desktop application
+# Linux: sudo systemctl start docker
 
 # Check port availability
 netstat -tulpn | grep 8000
+```
+
+**5. Docker daemon not running:**
+```bash
+# Windows: 
+# - Open Docker Desktop from Start menu
+# - Wait for the whale icon to become stable in system tray
+
+# Linux:
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# macOS:
+# - Open Docker Desktop application
+# - Wait for Docker to start completely
 ```
 
 ## �📝 License

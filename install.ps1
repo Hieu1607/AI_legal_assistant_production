@@ -34,6 +34,20 @@ try {
     exit 1
 }
 
+# Check if Docker is running
+Write-Host "Checking if Docker is running..."
+try {
+    docker info | Out-Null
+    Write-Host "Docker daemon: Running"
+} catch {
+    Write-Host "Error: Docker Desktop is not running. Please start Docker Desktop first."
+    Write-Host "To start Docker Desktop:"
+    Write-Host "1. Click on Docker Desktop icon in the system tray"
+    Write-Host "2. Or run Docker Desktop from Start menu"
+    Write-Host "3. Wait for Docker to start completely (whale icon should be stable)"
+    exit 1
+}
+
 Write-Host "All prerequisites met!"
 Write-Host ""
 
