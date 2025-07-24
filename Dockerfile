@@ -21,7 +21,7 @@ COPY src/ ./src/
 COPY configs/ ./configs/
 COPY services/ ./services/
 COPY scripts/ ./scripts/
-COPY .env_example .env
+COPY .env.example .env
 
 # Create basic directories
 RUN mkdir -p logs
