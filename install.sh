@@ -22,7 +22,9 @@ else
 fi
 
 # Check Python
-if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+if command -v python3 >/dev/null 2>&1; then
+    echo "Python: OK"
+elif command -v python >/dev/null 2>&1; then
     echo "Python: OK"
 else
     echo "❌ Error: Python is not installed. Please install Python first."
@@ -50,21 +52,20 @@ echo "Checking if Docker is running..."
 dockerRunning=false
 dockerOutput=""
 
-if dockerOutput=$(docker info 2>&1); then
-    if [ $? -eq 0 ]; then
-        dockerRunning=true
-        echo "Docker daemon: Running"
-    else
-        echo "Docker command exit code: $?"
-        echo "Docker output: $dockerOutput"
-    fi
+dockerOutput=$(docker info 2>&1)
+dockerExitCode=$?
+
+if [ $dockerExitCode -eq 0 ]; then
+    dockerRunning=true
+    echo "Docker daemon: Running"
 else
-    echo "Exception caught while checking Docker"
+    echo "Docker command exit code: $dockerExitCode"
+    echo "Docker output: $dockerOutput"
 fi
 
 if [ "$dockerRunning" = false ]; then
     echo ""
-    echo "❌ Docker is not running!"
+    echo "❌ Docker Desktop is not running!"
     echo ""
     echo "Please start Docker first:"
     echo "Linux: sudo systemctl start docker"
@@ -83,11 +84,20 @@ echo ""
 
 # Install gdown for Google Drive downloads
 echo "Installing gdown for data download..."
-if pip3 install gdown >/dev/null 2>&1 || pip install gdown >/dev/null 2>&1; then
-    echo "gdown installed successfully"
+if command -v pip3 >/dev/null 2>&1; then
+    if pip3 install gdown >/dev/null 2>&1; then
+        echo "gdown installed successfully"
+    else
+        echo "⚠ Warning: Failed to install gdown. You may need to install it manually: pip3 install gdown"
+    fi
+elif command -v pip >/dev/null 2>&1; then
+    if pip install gdown >/dev/null 2>&1; then
+        echo "gdown installed successfully"
+    else
+        echo "⚠ Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
+    fi
 else
-    echo "⚠ Warning: Failed to install gdown. You may need to install it manually:"
-    echo "pip3 install gdown  # or pip install gdown"
+    echo "⚠ Warning: pip not found. Please install gdown manually: pip install gdown"
 fi
 echo ""
 
@@ -96,18 +106,18 @@ originalLocation=$(pwd)
 
 # Download and run setup script
 echo "Downloading setup script..."
-if wget -q "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.sh" -O "ai_legal_setup.sh" 2>/dev/null || curl -s "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.sh" -o "ai_legal_setup.sh" 2>/dev/null; then
+if wget -q "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.sh" -O "ai_legal_setup.sh" 2>/dev/null; then
     echo "Running setup..."
     chmod +x ai_legal_setup.sh
-    if ./ai_legal_setup.sh; then
-        rm -f ai_legal_setup.sh
-    else
-        echo "❌ Error running setup script"
-        cd "$originalLocation"
-        rm -f ai_legal_setup.sh
-        read -p "Press Enter to exit..."
-        exit 1
-    fi
+    ./ai_legal_setup.sh
+    cd "$originalLocation"
+    rm -f ai_legal_setup.sh
+elif curl -s "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.sh" -o "ai_legal_setup.sh" 2>/dev/null; then
+    echo "Running setup..."
+    chmod +x ai_legal_setup.sh
+    ./ai_legal_setup.sh
+    cd "$originalLocation"
+    rm -f ai_legal_setup.sh
 else
     echo "❌ Error downloading setup script"
     cd "$originalLocation"
