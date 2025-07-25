@@ -37,6 +37,12 @@
 Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/install.ps1").Content
 ```
 
+### Option 1b: One-Click Install (Linux/macOS)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/install.sh | bash
+```
+
 ### Option 2: Manual Setup
 
 #### Linux/macOS:
