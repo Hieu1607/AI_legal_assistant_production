@@ -114,7 +114,13 @@ def main():
     setup_path()
     logger = setup_logging()
 
-    logger.info("Starting AI Legal Assistant warm up sequence...")
+    # Check if this is post-startup warm up
+    is_post_startup = len(sys.argv) > 1 and sys.argv[1] == "--post-startup"
+    
+    if is_post_startup:
+        logger.info("Starting AI Legal Assistant POST-STARTUP warm up sequence...")
+    else:
+        logger.info("Starting AI Legal Assistant PRE-STARTUP warm up sequence...")
 
     success = True
 
@@ -130,7 +136,10 @@ def main():
         success = False
 
     if success:
-        logger.info("All warm up tasks completed successfully!")
+        if is_post_startup:
+            logger.info("Post-startup warm up completed successfully!")
+        else:
+            logger.info("Pre-startup warm up completed successfully!")
         sys.exit(0)
     else:
         logger.error("Some warm up tasks failed!")

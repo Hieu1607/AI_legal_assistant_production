@@ -7,7 +7,7 @@
 - **🔍 Tìm kiếm văn bản pháp lý**: Tìm kiếm thông minh trong cơ sở dữ liệu văn bản luật
 - ** Vector Database**: Sử dụng ChromaDB để lưu trữ và tìm kiếm embeddings
 - **🚀 API RESTful**: FastAPI với documentation tự động
-- **🐳 Docker**: Containerized deployment với warm-up tự động
+- **🐳 Docker**: Containerized deployment với double warm-up tự động
 - **⚡ RAG System**: Retrieval-Augmented Generation cho tìm kiếm chính xác
 
 ## 🛠️ Tech Stack
