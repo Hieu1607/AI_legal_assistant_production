@@ -34,8 +34,9 @@ print('Downloading BAAI/bge-m3 model...'); \
 model = SentenceTransformer('BAAI/bge-m3'); \
 "
 
-# Make startup script executable
-RUN chmod +x /app/scripts/start_with_warmup.sh
+# Fix line endings and make startup script executable
+RUN sed -i 's/\r$//' /app/scripts/start_with_warmup.sh && \
+    chmod +x /app/scripts/start_with_warmup.sh
 
 EXPOSE 8000
 
