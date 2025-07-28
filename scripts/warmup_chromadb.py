@@ -116,7 +116,7 @@ def main():
 
     # Check if this is post-startup warm up
     is_post_startup = len(sys.argv) > 1 and sys.argv[1] == "--post-startup"
-    
+
     if is_post_startup:
         logger.info("Starting AI Legal Assistant POST-STARTUP warm up sequence...")
     else:
