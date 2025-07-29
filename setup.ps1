@@ -33,8 +33,8 @@ docker-compose up -d
 
 Write-Host "Setup complete!"
 Write-Host ""
-Write-Host "🚀 Application is starting up with smoke tests..."
-Write-Host "⏳ This process takes about 2-3 minutes:"
+Write-Host "Application is starting up with smoke tests..."
+Write-Host "This process takes about 2-3 minutes:"
 Write-Host "   1. Warm up ChromaDB (~30s)"
 Write-Host "   2. Start server (~30s)" 
 Write-Host "   3. Wait for server stability (60s)"

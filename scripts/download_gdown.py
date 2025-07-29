@@ -102,9 +102,9 @@ def download_from_gdrive():
         # Tên file tải về (trong thư mục scripts)
         download_path = Path(__file__).parent / "downloaded_data.zip"
 
-        print("📥 Đang tải file từ Google Drive...")
-        print(f"🔗 URL: {url}")
-        print(f"💾 Tải về: {download_path}")
+        print("Đang tải file từ Google Drive...")
+        print(f"URL: {url}")
+        print(f"Tải về: {download_path}")
         print()
 
         # Tải file với gdown
@@ -116,13 +116,13 @@ def download_from_gdrive():
 
         # Kiểm tra kích thước file
         file_size = download_path.stat().st_size
-        print(f"✅ Đã tải xong: {download_path.name}")
-        print(f"📊 Kích thước: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
+        print(f"Đã tải xong: {download_path.name}")
+        print(f"Kích thước: {file_size:,} bytes ({file_size/1024/1024:.2f} MB)")
         print()
 
         # Kiểm tra xem có phải file zip không
         if not download_path.suffix.lower() == ".zip":
-            print("⚠️  File tải về không phải là zip, đổi tên...")
+            print("File tải về không phải là zip, đổi tên...")
             new_path = download_path.with_suffix(".zip")
             download_path.rename(new_path)
             download_path = new_path
@@ -131,23 +131,23 @@ def download_from_gdrive():
         extract_success = extract_zip_file(download_path, processed_dir)
 
         if not extract_success:
-            print("❌ Không thể giải nén file")
+            print("Không thể giải nén file")
             return False
 
         print()
 
         # Hiển thị kết quả
-        print("📋 Nội dung thư mục data/processed:")
+        print("Nội dung thư mục data/processed:")
         try:
             for item in processed_dir.iterdir():
                 if item.is_file():
                     size = item.stat().st_size
-                    print(f"   📄 {item.name} ({size:,} bytes)")
+                    print(f"  {item.name} ({size:,} bytes)")
                 elif item.is_dir():
                     file_count = len(list(item.iterdir()))
                     print(f"   📁 {item.name}/ ({file_count} items)")
         except Exception as e:
-            print(f"⚠️  Không thể liệt kê files: {e}")
+            print(f"Không thể liệt kê files: {e}")
 
         print()
 
@@ -155,18 +155,18 @@ def download_from_gdrive():
         cleanup_success = cleanup_zip_file(download_path)
 
         if extract_success and cleanup_success:
-            print("🎉 Hoàn thành tất cả các bước!")
+            print("Hoàn thành tất cả các bước!")
             return True
         else:
             print("⚠️  Một số bước không thành công hoàn toàn")
             return False
 
     except ImportError:
-        print("❌ Chưa cài gdown.")
+        print("Chưa cài gdown.")
         print("Cài đặt bằng lệnh: pip install gdown")
         return False
     except Exception as error:
-        print(f"❌ Lỗi khi tải/xử lý file: {error}")
+        print(f"Lỗi khi tải/xử lý file: {error}")
         return False
 
 
@@ -197,15 +197,15 @@ def show_project_structure():
         data_dir = project_root / "data"
 
         if not data_dir.exists():
-            print("📁 Thư mục data chưa được tạo")
+            print(" Thư mục data chưa được tạo")
             return
 
         print("🏗️  Cấu trúc thư mục project:")
-        print(f"📁 {project_root.name}/")
-        print("   📁 data/")
+        print(f" {project_root.name}/")
+        print("    data/")
 
         if (data_dir / "processed").exists():
-            print("      📁 processed/")
+            print("     processed/")
             processed_dir = data_dir / "processed"
 
             # Hiển thị nội dung processed
@@ -230,7 +230,7 @@ def show_project_structure():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🚀 TẢI VÀ XỬ LÝ DỮ LIỆU TỪ GOOGLE DRIVE")
+    print("TẢI VÀ XỬ LÝ DỮ LIỆU TỪ GOOGLE DRIVE")
     print("=" * 60)
     print()
 
@@ -238,23 +238,23 @@ if __name__ == "__main__":
     try:
         import gdown  # noqa: F401
 
-        print("✅ Gdown đã sẵn sàng!")
+        print("Gdown đã sẵn sàng!")
         print()
 
         success = download_from_gdrive()
 
         print("=" * 60)
         if success:
-            print("🎉 HOÀN THÀNH TẤT CẢ CÁC BƯỚC!")
+            print("HOÀN THÀNH TẤT CẢ CÁC BƯỚC!")
             print()
             show_project_structure()
         else:
-            print("❌ QUÁ TRÌNH THẤT BẠI!")
-            print("💡 Kiểm tra lại kết nối mạng và Google Drive link")
+            print("QUÁ TRÌNH THẤT BẠI!")
+            print("Kiểm tra lại kết nối mạng và Google Drive link")
         print("=" * 60)
 
     except ImportError:
-        print("❌ Gdown chưa được cài đặt!")
+        print("Gdown chưa được cài đặt!")
         print()
         install_gdown_guide()
         print("=" * 60)

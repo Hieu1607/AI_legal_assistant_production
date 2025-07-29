@@ -41,17 +41,12 @@ model = SentenceTransformer('BAAI/bge-m3'); \
 
 # Fix line endings and make startup scripts executable
 RUN sed -i 's/\r$//' /app/scripts/start_with_warmup.sh && \
-    sed -i 's/\r$//' /app/scripts/start_with_smoke_test.sh && \
-    sed -i 's/\r$//' /app/scripts/smoke_test.sh && \
-    chmod +x /app/scripts/start_with_warmup.sh && \
-    chmod +x /app/scripts/start_with_smoke_test.sh && \
-    chmod +x /app/scripts/smoke_test.sh 
+    chmod +x /app/scripts/start_with_warmup.sh && 
 
 
 EXPOSE 8000
 
-# Mặc định sử dụng startup với smoke test
-# Để chạy không có smoke test: docker run ... /app/scripts/start_with_warmup.sh
-CMD ["/app/scripts/start_with_smoke_test.sh"]
+# For local development with warmup, use: docker run ... /app/scripts/start_with_warmup.sh
+CMD ["/app/scripts/start_with_warmup.sh"]
 
 
