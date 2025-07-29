@@ -12,8 +12,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements files
+    
+    # Copy requirements files
 COPY requirements.txt ./
 
 # Install Python packages from requirements.txt
@@ -40,8 +40,8 @@ model = SentenceTransformer('BAAI/bge-m3'); \
 "
 
 # Fix line endings and make startup scripts executable
-RUN sed -i 's/\r$//' /app/scripts/start_with_warmup.sh && \
-    chmod +x /app/scripts/start_with_warmup.sh
+RUN chmod +x /app/scripts/start_with_warmup.sh && \
+    sed -i 's/\r$//' /app/scripts/start_with_warmup.sh 
 
 EXPOSE 8000
 

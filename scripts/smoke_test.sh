@@ -5,7 +5,7 @@ trap 'echo "An error happened: "' ERR
 echo 'Testing API'
 
 
-response_1=$(curl -w "%{http_code}" -X POST http://localhost:8000/retrieve \
+response_1=$(curl -s -w "%{http_code}" -X POST http://localhost:8000/retrieve \
      -o temp_response.json\
      -H "Content-type:application/json"\
      -d '{"question":"Chương I điều 1 luật dân sự là gì?","top_k":5}')
@@ -19,7 +19,7 @@ else
     exit 1
 fi
 
-response_2=$(curl -w "%{http_code}" -X POST http://localhost:8000/rag \
+response_2=$(curl -s -w "%{http_code}" -X POST http://localhost:8000/rag \
      -o temp_response.json\
      -H "Content-type:application/json"\
      -d '{"question":"Chương I điều 1 luật dân sự là gì?"}')
