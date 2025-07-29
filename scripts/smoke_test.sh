@@ -36,4 +36,4 @@ fi
 # Clean up temp file
 rm -f temp_response.json
 
-echo "✅ Tất cả smoke tests đã thành công!"
+echo "Tất cả smoke tests đã thành công!"
