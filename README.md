@@ -81,6 +81,23 @@ docker-compose build
 docker-compose up -d
 ```
 
+**⏳ Lưu ý**: Hệ thống mặc định chạy với smoke test, quá trình khởi động mất khoảng 2-3 phút:
+1. Warm up ChromaDB (~30s)
+2. Khởi động server (~30s) 
+3. Chờ server ổn định (60s)
+4. Chạy smoke tests tự động (~30s)
+
+Theo dõi quá trình: `docker-compose logs -f`
+
+### Option 3: Chạy không có Smoke Test
+
+Nếu muốn bỏ qua smoke test để khởi động nhanh hơn:
+
+```bash
+# Override command để chỉ chạy warmup
+docker run -p 8000:8000 -v $(pwd)/data:/app/data your-image /app/scripts/start_with_warmup.sh
+```
+
 ## 📱 Usage
 
 Sau khi khởi động thành công, bạn có thể truy cập:

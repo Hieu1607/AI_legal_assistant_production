@@ -6,8 +6,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 # Set up logging
-root = os.path.dirname(os.getcwd())
-sys.path.insert(0, str(root))
+project_root = os.path.dirname(os.getcwd())
+sys.path.insert(0, str(project_root))
 from app import agent, rag, retrieve
 from configs.logger import get_logger_app, setup_logging
 
@@ -19,6 +19,30 @@ app = FastAPI()
 app.include_router(retrieve.router)
 app.include_router(rag.router)
 app.include_router(agent.router)
+
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment platforms"""
+    return {"status": "healthy", "service": "AI Legal Assistant"}
+
+
+# Root endpoint
+@app.get("/")
+async def app_root():
+    """Root endpoint with service information"""
+    return {
+        "service": "AI Legal Assistant",
+        "status": "running",
+        "endpoints": {
+            "health": "/health",
+            "docs": "/docs",
+            "retrieve": "/retrieve",
+            "rag": "/rag",
+            "agent": "/agent",
+        },
+    }
 
 
 # Exception handler for validation error

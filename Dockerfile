@@ -8,6 +8,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+# Install system dependencies including curl for smoke tests
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy requirements files
 COPY requirements.txt ./
 
@@ -34,10 +39,19 @@ print('Downloading BAAI/bge-m3 model...'); \
 model = SentenceTransformer('BAAI/bge-m3'); \
 "
 
-# Fix line endings and make startup script executable
+# Fix line endings and make startup scripts executable
 RUN sed -i 's/\r$//' /app/scripts/start_with_warmup.sh && \
-    chmod +x /app/scripts/start_with_warmup.sh
+    sed -i 's/\r$//' /app/scripts/start_with_smoke_test.sh && \
+    sed -i 's/\r$//' /app/scripts/smoke_test.sh && \
+    chmod +x /app/scripts/start_with_warmup.sh && \
+    chmod +x /app/scripts/start_with_smoke_test.sh && \
+    chmod +x /app/scripts/smoke_test.sh 
+
 
 EXPOSE 8000
 
-CMD ["/app/scripts/start_with_warmup.sh"]
+# Mặc định sử dụng startup với smoke test
+# Để chạy không có smoke test: docker run ... /app/scripts/start_with_warmup.sh
+CMD ["/app/scripts/start_with_smoke_test.sh"]
+
+

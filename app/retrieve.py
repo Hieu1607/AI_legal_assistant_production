@@ -45,11 +45,6 @@ class QueryRequest(BaseModel):
     top_k: int = Field(default=5, description="Number of top results to return", ge=1)
 
 
-@router.get("/")
-def index():
-    return {"Hello muhehehehe"}
-
-
 @router.post("/retrieve")
 def retrieve_embeddings(request: QueryRequest):
     logger.info("The question is %s", request.question)
