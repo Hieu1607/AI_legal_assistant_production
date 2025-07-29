@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e # Stop if errors happen
-trap 'echo "An error happened: "' ERR
 
 echo 'Testing API'
 
@@ -15,7 +14,7 @@ if [ "$http_code_1" = "200" ]; then
     echo "API /retrieve thành công!"
     cat temp_response.json
 else
-    echo "Lỗi API /retrieve, mã phản hồi: $http_code_1"
+    echo -e "\nLỗi API /retrieve, mã phản hồi: $http_code_1"
     exit 1
 fi
 
@@ -26,14 +25,14 @@ response_2=$(curl -s -w "%{http_code}" -X POST http://localhost:8000/rag \
 
 http_code_2=$(tail -n1 <<< "$response_2")
 if [ "$http_code_2" = "200" ]; then
-    echo "API /rag thành công!"
+    echo -e "\nAPI /rag thành công!"
     cat temp_response.json
 else
-    echo "Lỗi API /rag, mã phản hồi: $http_code_2"
+    echo -e "\nLỗi API /rag, mã phản hồi: $http_code_2"
     exit 2
 fi
 
 # Clean up temp file
 rm -f temp_response.json
 
-echo "Tất cả smoke tests đã thành công!"
+echo -e "\nTất cả smoke tests đã thành công!"
