@@ -41,8 +41,7 @@ model = SentenceTransformer('BAAI/bge-m3'); \
 
 # Fix line endings and make startup scripts executable
 RUN sed -i 's/\r$//' /app/scripts/start_with_warmup.sh && \
-    chmod +x /app/scripts/start_with_warmup.sh && 
-
+    chmod +x /app/scripts/start_with_warmup.sh
 
 EXPOSE 8000
 
