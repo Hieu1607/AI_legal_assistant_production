@@ -6,14 +6,16 @@ import time
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv()
-genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
-
 # from google.generativeai import generative_models
 # import fastapi
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
+from .metrics import GEMINI_TOKENS
+
+load_dotenv()
+genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
 
 retrieving_time = 0
 prompting_time = 0
@@ -84,6 +86,11 @@ async def ask_LLM(relevant_sentences, question):
             loop.run_in_executor(None, lambda: model.generate_content(prompt)),
             timeout=60,
         )
+        usage = response.usage_metadata or {}
+
+        GEMINI_TOKENS.labels(type="input").inc(usage.get("prompt_token_count", 0))
+        GEMINI_TOKENS.labels(type="output").inc(usage.get("candidates_token_count", 0))
+        GEMINI_TOKENS.labels(type="total").inc(usage.get("total_token_count", 0))
         return response.text
     except asyncio.TimeoutError:
         return "Hệ thống đang bận vui lòng thử lại sau."

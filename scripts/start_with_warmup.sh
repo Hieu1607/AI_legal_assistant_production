@@ -19,9 +19,18 @@ echo "Starting FastAPI server..."
 uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 UVICORN_PID=$!
 
+# Debug: Print PID và process info
+echo "Uvicorn PID: $UVICORN_PID"
+echo "Process list:"
+ps aux | grep uvicorn | head -5
+
 # Wait for server to be ready
 echo "Waiting for server to start..."
-sleep 10
+sleep 15  # Increased wait time
+
+# Debug: Check process before kill command
+echo "Checking if PID $UVICORN_PID exists:"
+ps -p $UVICORN_PID || echo "PID not found!"
 
 # Check if server is running
 if kill -0 $UVICORN_PID 2>/dev/null; then

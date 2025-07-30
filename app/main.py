@@ -1,15 +1,20 @@
 import os
 import sys
+import time
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from starlette.responses import Response
 
 # Set up logging
 project_root = os.path.dirname(os.getcwd())
 sys.path.insert(0, str(project_root))
 from app import agent, rag, retrieve
 from configs.logger import get_logger_app, setup_logging
+
+from .metrics import LATENCY_HIST, REQUEST_COUNTER
 
 setup_logging()
 logger = get_logger_app()
@@ -43,6 +48,26 @@ async def app_root():
             "agent": "/agent",
         },
     }
+
+
+@app.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+# Middleware to scrape metrics
+@app.middleware("http")
+async def prometheus_middleware(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+
+    path = request.url.path
+    method = request.method
+    status_code = response.status_code
+
+    REQUEST_COUNTER.labels(method=method, endpoint=path, http_status=status_code).inc()
+    LATENCY_HIST.labels(method=method, endpoint=path).observe(process_time)
 
 
 # Exception handler for validation error
