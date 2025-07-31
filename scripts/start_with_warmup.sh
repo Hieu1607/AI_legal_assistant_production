@@ -16,7 +16,7 @@ fi
 echo "Starting FastAPI server..."
 
 # Start the main application in background
-uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+cd /app && python app/main.py &
 UVICORN_PID=$!
 
 # Wait for server to be ready
