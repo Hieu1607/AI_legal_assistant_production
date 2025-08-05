@@ -26,7 +26,8 @@ app.add_middleware(
         "http://localhost:5500",
         "http://127.0.0.1:3000",
         "http://localhost:3000",
-        "https://ai-legal-assistant-production-1.onrender.com/",
+        "https://ai-legal-assistant-production-1.onrender.com",  # Remove trailing slash
+        "*"  # Allow all origins for development (remove this in production)
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
