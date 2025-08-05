@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
         userInput.style.height = 'auto'; // Reset height
 
+        // Show typing indicator
+        const typingElement = showTypingIndicator();
+
         try {
             const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
@@ -28,15 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
             
+            // Remove typing indicator
+            removeTypingIndicator(typingElement);
+            
             if (result.status === 'success' && result.data && result.data.answer) {
-                displayMessage(result.data.answer, 'bot');
+                await displayTypingMessage(result.data.answer, 'bot');
             } else {
-                displayMessage('Sorry, I could not find an answer.', 'bot');
+                await displayTypingMessage('Sorry, I could not find an answer.', 'bot');
             }
 
         } catch (error) {
             console.error('Failed to fetch from API:', error);
-            displayMessage('There was an error connecting to the assistant. Please try again later.', 'bot');
+            // Remove typing indicator
+            removeTypingIndicator(typingElement);
+            await displayTypingMessage('There was an error connecting to the assistant. Please try again later.', 'bot');
         }
     };
 
@@ -46,6 +54,55 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.textContent = message;
         chatBox.appendChild(messageElement);
         chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+    };
+
+    const showTypingIndicator = () => {
+        const typingElement = document.createElement('div');
+        typingElement.classList.add('message', 'bot-message', 'typing-indicator');
+        typingElement.innerHTML = `
+            <span class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="typing-text">AI đang suy nghĩ...</span>
+        `;
+        chatBox.appendChild(typingElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return typingElement;
+    };
+
+    const removeTypingIndicator = (typingElement) => {
+        if (typingElement && typingElement.parentNode) {
+            chatBox.removeChild(typingElement);
+        }
+    };
+
+    const displayTypingMessage = async (message, sender) => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', `${sender}-message`);
+        chatBox.appendChild(messageElement);
+        
+        // Split message into words for more natural typing effect
+        const words = message.split(' ');
+        let currentText = '';
+        
+        for (let i = 0; i < words.length; i++) {
+            currentText += (i > 0 ? ' ' : '') + words[i];
+            messageElement.textContent = currentText;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            // Add delay between words (adjust speed here)
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        // Add a cursor effect at the end
+        messageElement.innerHTML = currentText + '<span class="typing-cursor">|</span>';
+        
+        // Remove cursor after a short delay
+        setTimeout(() => {
+            messageElement.textContent = currentText;
+        }, 1000);
     };
 
     sendButton.addEventListener('click', sendMessage);
