@@ -1,12 +1,13 @@
 import os
 import sys
+import time
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 # Set up logging
-project_root = os.path.dirname(os.getcwd())
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, str(project_root))
 from app import agent, rag, retrieve
 from configs.logger import get_logger_app, setup_logging
@@ -71,5 +72,5 @@ async def validation_exception_handler(_: Request, exc: RequestValidationError):
 if __name__ == "__main__":
     import uvicorn
 
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", "8000"))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
