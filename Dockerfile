@@ -32,14 +32,6 @@ COPY .env.example .env
 # Create basic directories
 RUN mkdir -p logs
 
-# Pre-download sentence-transformer model để tăng tốc khởi động
-RUN python -c "\
-from sentence_transformers import SentenceTransformer; \
-import os; \
-print('Downloading BAAI/bge-m3 model...'); \
-model = SentenceTransformer('BAAI/bge-m3'); \
-"
-
 # Fix line endings and make startup scripts executable
 RUN chmod +x /app/scripts/start_with_warmup.sh && \
     sed -i 's/\r$//' /app/scripts/start_with_warmup.sh 

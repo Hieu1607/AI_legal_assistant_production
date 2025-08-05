@@ -73,7 +73,7 @@ def warmup_chromadb(logger):
 
 def warmup_sentence_transformer(logger):
     """
-    Warm up sentence transformer model
+    Warm up API embedding connection
 
     Args:
         logger: Logger instance for output
@@ -82,27 +82,27 @@ def warmup_sentence_transformer(logger):
         bool: True if successful, False otherwise
     """
     try:
-        logger.info("Starting Sentence Transformer warm up...")
+        logger.info("🔥 Starting API embedding warm up...")
 
         # pylint: disable=import-outside-toplevel
-        from sentence_transformers import SentenceTransformer
+        from gradio_client import Client
 
         start_time = time.time()
-        # Load the model (should be cached from Docker build)
-        model = SentenceTransformer("BAAI/bge-m3")
+        # Test API connection
+        client = Client("hieuailearning/BAAI_bge_m3_api")
 
-        # Test encoding
+        # Test encoding with API
         test_text = "This is a test sentence for warm up"
-        embedding = model.encode(test_text)
+        embedding = client.predict(text_input=test_text, api_name="/predict")
 
         elapsed = time.time() - start_time
-        logger.info("Sentence Transformer warm up completed in %.2f seconds", elapsed)
-        logger.info("Test embedding shape: %s", embedding.shape)
+        logger.info("API embedding warm up completed in %.2f seconds", elapsed)
+        logger.info("Test embedding length: %d", len(embedding) if embedding else 0)
 
         return True
 
     except Exception as error:  # pylint: disable=broad-except
-        logger.error("Sentence Transformer warm up failed: %s", error)
+        logger.error("API embedding warm up failed: %s", error)
         return False
 
 

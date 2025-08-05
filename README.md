@@ -13,7 +13,7 @@
 ## 🛠️ Tech Stack
 
 - **Backend**: FastAPI, Python 3.11
-- **AI/ML**: Sentence Transformers (all-MiniLM-L6-v2), Google Generative AI
+- **AI/ML**: API-based Embedding (BAAI/bge-m3 via Gradio), Google Generative AI
 - **Database**: ChromaDB (Vector Database)
 - **Containerization**: Docker, Docker Compose
 - **Data Processing**: BeautifulSoup, Pandas
