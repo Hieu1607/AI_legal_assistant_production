@@ -2,12 +2,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('userInput');
     const sendButton = document.getElementById('sendButton');
     const chatBox = document.getElementById('chat-box');
+    const welcomeScreen = document.getElementById('welcome-screen');
 
     const API_ENDPOINT = 'https://ai-legal-assistant-8g4g.onrender.com/rag';
+
+    let isFirstMessage = true; // Track if this is the first message
+
+    const startChat = () => {
+        // Hide welcome screen and show chat interface
+        if (isFirstMessage && welcomeScreen) {
+            welcomeScreen.style.animation = 'welcome-fade-out 0.5s ease-in forwards';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                chatBox.classList.add('chat-started');
+            }, 500);
+            isFirstMessage = false;
+        }
+    };
 
     const sendMessage = async () => {
         const question = userInput.value.trim();
         if (question === '') return;
+
+        // Start chat mode on first message
+        startChat();
 
         displayMessage(question, 'user');
         userInput.value = '';
@@ -37,14 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success' && result.data && result.data.answer) {
                 await displayTypingMessage(result.data.answer, 'bot');
             } else {
-                await displayTypingMessage('Sorry, I could not find an answer.', 'bot');
+                await displayTypingMessage('Xin lỗi, tôi không thể tìm thấy câu trả lời.', 'bot');
             }
 
         } catch (error) {
             console.error('Failed to fetch from API:', error);
             // Remove typing indicator
             removeTypingIndicator(typingElement);
-            await displayTypingMessage('There was an error connecting to the assistant. Please try again later.', 'bot');
+            await displayTypingMessage('Đã xảy ra lỗi khi kết nối với trợ lý. Vui lòng thử lại sau.', 'bot');
         }
     };
 
@@ -109,6 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Handle suggestion clicks
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('suggestion-item')) {
+            const suggestionText = event.target.textContent.trim();
+            userInput.value = `Hãy cho tôi biết về ${suggestionText.toLowerCase()}`;
             sendMessage();
         }
     });
