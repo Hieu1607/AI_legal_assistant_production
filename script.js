@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('sendButton');
     const chatBox = document.getElementById('chat-box');
 
-    const API_ENDPOINT = 'https://ai-legal-assistant-8g4g.onrender.com/rag/';
+    const API_ENDPOINT = 'https://ai-legal-assistant-8g4g.onrender.com/rag';
 
     const sendMessage = async () => {
         const question = userInput.value.trim();
