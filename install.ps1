@@ -17,16 +17,6 @@ try {
     return
 }
 
-# Check Python
-try {
-    python --version | Out-Null
-    Write-Host "Python: OK"
-} catch {
-    Write-Host "❌ Error: Python is not installed. Please install Python first."
-    Read-Host -Prompt "Press Enter to exit..."
-    return
-}
-
 # Check Docker
 try {
     docker --version | Out-Null
@@ -72,16 +62,6 @@ if (-not $dockerRunning) {
 
 Write-Host ""
 Write-Host "✅ All prerequisites met!"
-Write-Host ""
-
-# Install gdown for Google Drive downloads
-Write-Host "Installing gdown for data download..."
-try {
-    pip install gdown
-    Write-Host "gdown installed successfully"
-} catch {
-    Write-Host "⚠ Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
-}
 Write-Host ""
 
 # Move to parent directory to avoid conflicts with project cloning

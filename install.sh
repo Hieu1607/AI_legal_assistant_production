@@ -21,20 +21,6 @@ else
     exit 1
 fi
 
-# Check Python
-if command -v python3 >/dev/null 2>&1; then
-    echo "Python: OK"
-elif command -v python >/dev/null 2>&1; then
-    echo "Python: OK"
-else
-    echo "❌ Error: Python is not installed. Please install Python first."
-    echo "Ubuntu/Debian: sudo apt-get install python3 python3-pip"
-    echo "CentOS/RHEL: sudo yum install python3 python3-pip"
-    echo "macOS: brew install python"
-    read -p "Press Enter to exit..."
-    exit 1
-fi
-
 # Check Docker
 if command -v docker >/dev/null 2>&1; then
     echo "Docker: OK"
@@ -80,25 +66,6 @@ fi
 
 echo ""
 echo "✅ All prerequisites met!"
-echo ""
-
-# Install gdown for Google Drive downloads
-echo "Installing gdown for data download..."
-if command -v pip3 >/dev/null 2>&1; then
-    if pip3 install gdown >/dev/null 2>&1; then
-        echo "gdown installed successfully"
-    else
-        echo "⚠ Warning: Failed to install gdown. You may need to install it manually: pip3 install gdown"
-    fi
-elif command -v pip >/dev/null 2>&1; then
-    if pip install gdown >/dev/null 2>&1; then
-        echo "gdown installed successfully"
-    else
-        echo "⚠ Warning: Failed to install gdown. You may need to install it manually: pip install gdown"
-    fi
-else
-    echo "⚠ Warning: pip not found. Please install gdown manually: pip install gdown"
-fi
 echo ""
 
 # Move to parent directory to avoid conflicts with project cloning
