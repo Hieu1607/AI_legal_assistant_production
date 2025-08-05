@@ -4,7 +4,7 @@ from prometheus_client import Counter, Histogram
 REQUEST_COUNTER = Counter(
     "http_requests_total", "Total http requests", ["method", "endpoint", "status_code"]
 )
-LATENCY_HIST = Histogram(
+d = Histogram(
     "request_latency_seconds", "Histogram of request latency", ["method", "endpoint"]
 )
 GEMINI_TOKENS = Counter(
