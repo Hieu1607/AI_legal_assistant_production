@@ -37,7 +37,6 @@ def warmup_chromadb(logger):
     try:
         logger.info("🔥 Starting ChromaDB warm up...")
 
-        # Import sau khi đã setup path
         # pylint: disable=import-outside-toplevel
         from src.store_vector.init_index import init_chroma_index
 
@@ -82,7 +81,7 @@ def warmup_sentence_transformer(logger):
         bool: True if successful, False otherwise
     """
     try:
-        logger.info("🔥 Starting API embedding warm up...")
+        logger.info("Starting API embedding warm up...")
 
         # pylint: disable=import-outside-toplevel
         from gradio_client import Client
