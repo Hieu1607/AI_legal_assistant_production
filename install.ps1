@@ -90,7 +90,7 @@ $originalLocation = Get-Location
 # Download and run setup script
 Write-Host "Downloading setup script..."
 try {
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/setup.ps1" -OutFile "ai_legal_setup.ps1"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/prometheus/setup.ps1" -OutFile "ai_legal_setup.ps1"
     Write-Host "Running setup..."
     .\ai_legal_setup.ps1
     Set-Location $originalLocation

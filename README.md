@@ -34,13 +34,13 @@
 ### Option 1: One-Click Install (Windows)
 
 ```powershell
-Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/install.ps1").Content
+Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/prometheus/install.ps1").Content
 ```
 
 ### Option 1b: One-Click Install (Linux/macOS)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_production/prometheus/install.sh | bash
 ```
 
 ### Option 2: Manual Setup
@@ -50,6 +50,7 @@ curl -sSL https://raw.githubusercontent.com/Hieu1607/AI_legal_assistant_producti
 # Clone repository
 git clone https://github.com/Hieu1607/AI_legal_assistant_production.git
 cd AI_legal_assistant_production
+git switch prometheus
 
 # Run setup script
 chmod +x setup.sh
@@ -61,7 +62,7 @@ chmod +x setup.sh
 # Clone repository
 git clone https://github.com/Hieu1607/AI_legal_assistant_production.git
 cd AI_legal_assistant_production
-
+git switch prometheus
 # Run setup script
 .\setup.ps1
 ```
@@ -72,7 +73,7 @@ cd AI_legal_assistant_production
 # 1. Clone repository
 git clone https://github.com/Hieu1607/AI_legal_assistant_production.git
 cd AI_legal_assistant_production
-
+git switch prometheus
 # 2. Download data
 python scripts/download_gdown.py
 

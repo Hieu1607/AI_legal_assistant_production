@@ -16,7 +16,7 @@ git clone https://github.com/Hieu1607/AI_legal_assistant_production.git
 
 # Change to project directory
 cd AI_legal_assistant_production
-
+git switch prometheus
 # Install gdown for data download
 echo "Installing gdown..."
 pip install gdown
