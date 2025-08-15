@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'fastapi'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['ai-legal-assistant:8000']
+    honor_labels: false
+    honor_timestamps: true
+    scheme: http
+    follow_redirects: true

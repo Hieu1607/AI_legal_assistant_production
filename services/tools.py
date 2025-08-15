@@ -4,6 +4,7 @@ import sys
 
 import google.generativeai as genai
 from dotenv import load_dotenv
+from google.api_core.exceptions import ResourceExhausted
 
 load_dotenv()
 genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
@@ -11,6 +12,7 @@ from pydantic import BaseModel
 
 root = os.getcwd()
 sys.path.insert(0, str(root))
+from app.metrics import GEMINI_TOKENS
 from configs.logger import get_logger_app, setup_logging
 
 setup_logging()
@@ -137,10 +139,28 @@ async def generate_answer(data: GenerateInput) -> GenerateOutput:
             loop.run_in_executor(None, lambda: model.generate_content(prompt)),
             timeout=60,
         )
+
+        # Track Gemini API token usage
+        usage = response.usage_metadata
+        GEMINI_TOKENS.labels(type="input").inc(
+            getattr(usage, "prompt_token_count", 0) if usage else 0
+        )
+        GEMINI_TOKENS.labels(type="output").inc(
+            getattr(usage, "candidates_token_count", 0) if usage else 0
+        )
+        GEMINI_TOKENS.labels(type="total").inc(
+            getattr(usage, "total_token_count", 0) if usage else 0
+        )
+
         logger.info("The answer from LLM is %s", response.text)
         return GenerateOutput(answer=response.text)
     except asyncio.TimeoutError:
         return GenerateOutput(answer="Hệ thống đang bận vui lòng thử lại sau.")
+    except ResourceExhausted:
+        logger.warning("Gemini API quota exceeded")
+        return GenerateOutput(
+            answer="Hệ thống đã vượt quá giới hạn sử dụng API hôm nay. Vui lòng thử lại vào ngày mai hoặc liên hệ quản trị viên để nâng cấp."
+        )
     except ConnectionError as e:
         logger.info("Network error: %s, retrying...", e)
         try:
@@ -150,9 +170,27 @@ async def generate_answer(data: GenerateInput) -> GenerateOutput:
                 loop.run_in_executor(None, lambda: model.generate_content(prompt)),
                 timeout=15,
             )
+
+            # Track Gemini API token usage for retry
+            usage = response.usage_metadata
+            GEMINI_TOKENS.labels(type="input").inc(
+                getattr(usage, "prompt_token_count", 0) if usage else 0
+            )
+            GEMINI_TOKENS.labels(type="output").inc(
+                getattr(usage, "candidates_token_count", 0) if usage else 0
+            )
+            GEMINI_TOKENS.labels(type="total").inc(
+                getattr(usage, "total_token_count", 0) if usage else 0
+            )
+
             return GenerateOutput(answer=response.text)
         except asyncio.TimeoutError:
             return GenerateOutput(answer="Hệ thống đang bận vui lòng thử lại sau.")
+        except ResourceExhausted:
+            logger.warning("Gemini API quota exceeded in retry")
+            return GenerateOutput(
+                answer="Hệ thống đã vượt quá giới hạn sử dụng API hôm nay. Vui lòng thử lại vào ngày mai hoặc liên hệ quản trị viên để nâng cấp."
+            )
         except ConnectionError:
             logger.info("Retry failed: %s", e)
             return GenerateOutput(answer="Lỗi mạng")

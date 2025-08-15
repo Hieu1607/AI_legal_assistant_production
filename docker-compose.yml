@@ -24,7 +24,15 @@ services:
     restart: unless-stopped
     networks:
       - ai-legal-network
-
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - ai-legal-network
 networks:
   ai-legal-network:
     driver: bridge

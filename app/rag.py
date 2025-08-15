@@ -6,25 +6,29 @@ import time
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv()
-genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
-
 # from google.generativeai import generative_models
 # import fastapi
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from google.api_core.exceptions import ResourceExhausted
 from pydantic import BaseModel
 
+load_dotenv()
+genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
+
 retrieving_time = 0
+
 prompting_time = 0
 llm_time = 0
 
 # Set up logging
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, str(project_root))
+root = os.path.dirname(os.getcwd())
+sys.path.insert(0, str(root))
 
 from configs.logger import get_logger_app, setup_logging
 from src.store_vector.search_embeddings import search_relevant_embeddings
+
+from .metrics import GEMINI_TOKENS
 
 setup_logging()
 # Sử dụng get_logger_app để ghi log vào app.log
@@ -69,7 +73,7 @@ async def ask_LLM(relevant_sentences, question):
         Trả lời câu hỏi theo 3 trường hợp
         Trường hợp 1: Nếu tìm thấy nội dung thích hợp trong tài liệu, trả lời 'Theo chương ... điều ... bộ luật abc ..., nội dung'
         Trường hợp 2: Nếu không tìm thấy nội dung thích hợp trong tài liệu, trả lời: 'Không tìm thấy thông tin liên quan đến câu hỏi.'
-        Trường hợp 3: Nếu câu hỏi linh tinh hoặc không liên quan đến pháp luật, trả lời: "Chào bạn, tôi đã sẵn sàng trả lời với vai trò là một trợ lý ảo pháp luật.Tuy nhiên, có vẻ như bạn chưa cung cấp câu hỏi cụ thể hoặc câu hỏi của bạn không liên quan đến pháp luật. Vui lòng đặt câu hỏi lại để tôi có thể trả lời."
+        Trường hợp 3: Nếu câu hỏi linh tinh hoặc không liên quan đến pháp luật, trả lời: "Chào bạn, tôi đã sẵn sàng trả lời với vai trò là một trợ lý ảo pháp luật. Tuy nhiên, có vẻ như bạn chưa cung cấp câu hỏi cụ thể hoặc câu hỏi của bạn không liên quan đến pháp luật. Vui lòng đặt câu hỏi lại để tôi có thể trả lời."
         Trả lời ngắn gọn.
     """
     end_propting_time = time.perf_counter()
@@ -84,9 +88,23 @@ async def ask_LLM(relevant_sentences, question):
             loop.run_in_executor(None, lambda: model.generate_content(prompt)),
             timeout=60,
         )
+        usage = response.usage_metadata
+
+        GEMINI_TOKENS.labels(type="input").inc(
+            getattr(usage, "prompt_token_count", 0) if usage else 0
+        )
+        GEMINI_TOKENS.labels(type="output").inc(
+            getattr(usage, "candidates_token_count", 0) if usage else 0
+        )
+        GEMINI_TOKENS.labels(type="total").inc(
+            getattr(usage, "total_token_count", 0) if usage else 0
+        )
         return response.text
     except asyncio.TimeoutError:
         return "Hệ thống đang bận vui lòng thử lại sau."
+    except ResourceExhausted:
+        logger.warning("Gemini API quota exceeded")
+        return "Hệ thống đã vượt quá giới hạn sử dụng API hôm nay. Vui lòng thử lại vào ngày mai hoặc liên hệ quản trị viên để nâng cấp."
     except ConnectionError as e:
         logger.info("Network error: %s, retrying...", e)
         try:
@@ -99,6 +117,9 @@ async def ask_LLM(relevant_sentences, question):
             return response.text
         except asyncio.TimeoutError:
             return "Hệ thống đang bận vui lòng thử lại sau."
+        except ResourceExhausted:
+            logger.warning("Gemini API quota exceeded in retry")
+            return "Hệ thống đã vượt quá giới hạn sử dụng API hôm nay. Vui lòng thử lại vào ngày mai hoặc liên hệ quản trị viên để nâng cấp."
         except ConnectionError:
             logger.info("Retry failed: %s", e)
             return "Lỗi mạng"

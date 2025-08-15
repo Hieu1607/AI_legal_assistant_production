@@ -53,5 +53,4 @@ certifi==2025.7.14
 google-generativeai==0.8.5
 google-auth==2.40.3
 
-gradio_client
-
+prometheus_client==0.14.1
