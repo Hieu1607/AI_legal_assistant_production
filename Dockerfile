@@ -28,7 +28,6 @@ COPY configs/ ./configs/
 COPY services/ ./services/
 COPY scripts/ ./scripts/
 
-
 # Create basic directories
 RUN mkdir -p logs
 

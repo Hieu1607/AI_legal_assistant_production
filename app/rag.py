@@ -16,23 +16,24 @@ from pydantic import BaseModel
 load_dotenv()
 genai.configure(api_key=os.getenv("Gemini_API_KEY"))  # type: ignore
 
-retrieving_time = 0
-
 prompting_time = 0
-llm_time = 0
-
-# Set up logging
+TOP_K = 5
 root = os.path.dirname(os.getcwd())
 sys.path.insert(0, str(root))
 
 from configs.logger import get_logger_app, setup_logging
+from src.cache.cache_manager import get_cache_manager
 from src.store_vector.search_embeddings import search_relevant_embeddings
 
 from .metrics import GEMINI_TOKENS
 
-setup_logging()
 # Sử dụng get_logger_app để ghi log vào app.log
 logger = get_logger_app(__name__)
+setup_logging()
+
+CACHE_TTL = int(os.getenv("RAG_CACHE_TTL", "3600"))  # 1 hour default
+CACHE_MAX_SIZE = int(os.getenv("RAG_CACHE_MAX_SIZE", "1000"))
+cache = get_cache_manager(ttl_seconds=CACHE_TTL, max_size=CACHE_MAX_SIZE)
 
 router = APIRouter()
 
@@ -44,7 +45,7 @@ class QueryQuestion(BaseModel):
 def get_relevant_sentences(question):
     logger.info("The question is %s", question)
     try:
-        relevant_embeddings = search_relevant_embeddings(question, 5)
+        relevant_embeddings = search_relevant_embeddings(question, TOP_K)
         relevant_sentences = []
         for sentence in relevant_embeddings["documents"][0]:
             relevant_sentences.append(sentence)
@@ -77,6 +78,7 @@ async def ask_LLM(relevant_sentences, question):
         Trả lời ngắn gọn.
     """
     end_propting_time = time.perf_counter()
+    global prompting_time  # pylint: disable=global-statement
     prompting_time = end_propting_time - start_prompting_time
     try:
         # Sử dụng hàm riêng để chạy generate_content trong một executor
@@ -128,7 +130,31 @@ async def ask_LLM(relevant_sentences, question):
 @router.post("/rag")
 async def ask_model(request: QueryQuestion):
     try:
+        cached_result = cache.get(request.question)
         start_retrieve_time = time.perf_counter()
+        if cached_result is not None:
+            answer, original_question, context_count = cached_result
+            logger.info(
+                "Cache HIT for question: %s (served in %.4f seconds)",
+                (
+                    request.question[:50] + "..."
+                    if len(request.question) > 50
+                    else request.question
+                ),
+                time.perf_counter() - start_retrieve_time,
+            )
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": {
+                        "answer": answer.strip(),
+                        "question": request.question,
+                        "context_count": context_count,
+                    },
+                    "cache_hit": True,
+                },
+            )
         relevant_sentences = get_relevant_sentences(request.question)
         end_retrieve_time = time.perf_counter()
         retrieving_time = end_retrieve_time - start_retrieve_time
@@ -146,7 +172,7 @@ async def ask_model(request: QueryQuestion):
             retrieving_time + prompting_time + llm_time,
         )
         logger.info("RAG answer successfully")
-
+        cache.set(request.question, answer, len(relevant_sentences))
         return JSONResponse(
             status_code=200,
             content={
